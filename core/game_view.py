@@ -1,7 +1,8 @@
 import arcade
-from core.building_manager import BuildingManager
-from core.unit_manager import UnitManager
-from core.selection_manager import SelectionManager
+from core.managers.building_manager import BuildingManager
+from core.managers.unit_manager import UnitManager
+from core.managers.selection_manager import SelectionManager
+from utils.i18n import t
 
 
 class GameView(arcade.View):
