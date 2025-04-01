@@ -1,5 +1,5 @@
 import arcade
-from core.building import Building
+from core.entities.building import Building
 
 class BuildingManager:
     def __init__(self):

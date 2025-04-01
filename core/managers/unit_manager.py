@@ -1,5 +1,5 @@
 import arcade
-from core.unit import Unit
+from core.entities.unit import Unit
 
 class UnitManager:
     def __init__(self):
