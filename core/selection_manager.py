@@ -52,6 +52,8 @@ class SelectionManager:
         self.selecting = False
 
     def clear_selection(self):
+        for s_obj in self.selected_objects:
+            s_obj.selected = False
         self.selected_objects.clear()
 
     def _deselect_all(self, objects):
