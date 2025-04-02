@@ -4,6 +4,7 @@ from core.managers.unit_manager import UnitManager
 from core.managers.selection_manager import SelectionManager
 from core.managers.gui_manager import GUIManager
 from core.managers.input_manager import InputManager
+from core.managers.resource_manager import ResourceManager
 from core.game_controller import GameController
 from utils.i18n import t
 
@@ -22,7 +23,8 @@ class GameView(arcade.View):
         self.unit_manager = UnitManager()
         self.selection_manager = SelectionManager()
         self.building_manager = BuildingManager()
-        self.controller = GameController(self.unit_manager, self.building_manager, None)
+        self.resource_manager = ResourceManager()
+        self.controller = GameController(self.unit_manager, self.building_manager, self.resource_manager, None)
         self.gui = GUIManager(self.window, self.controller)
         self.controller.gui_manager = self.gui
         self.input = InputManager(self.gui, self.selection_manager, self.unit_manager, self.building_manager)
@@ -51,3 +53,9 @@ class GameView(arcade.View):
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.input.on_mouse_motion(x, y, dx, dy)
+
+    def on_key_press(self, symbol, modifiers):
+        self.input.on_key_press(symbol, modifiers)
+
+    def on_key_release(self, symbol, modifiers):
+        self.input.on_key_release(symbol, modifiers)

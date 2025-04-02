@@ -32,7 +32,7 @@ class SelectionManager:
         self.clear_selection()
 
         # Priority: units
-        for unit in units:
+        for unit in reversed(units):
             if unit.collides_with_point((x, y)):
                 unit.selected = True
                 self.selected_objects.append(unit)

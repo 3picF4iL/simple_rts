@@ -20,15 +20,6 @@ class GUIElement:
     def contains_point(self, x: float, y: float) -> bool:
         return self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height
 
-    def on_mouse_press(self, x: float, y: float, button: int):
-        pass
-
-    def on_mouse_release(self, x: float, y: float, button: int):
-        pass
-
-    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
-        self.hovered = self.contains_point(x, y)
-
 
 class GUIButton(GUIElement):
     def __init__(self, x, y, width, height, label: str, action: Callable):
@@ -229,7 +220,10 @@ class GUIManager:
 
     def set_active_objects(self, objects):
         self.active_objects = objects
-        self.hud.set_active_elements(objects, self.game_controller)
+        if objects:
+            self.hud.set_active_elements(objects, self.game_controller)
+        else:
+            self.hud.clear_active_elements()
 
     def set_click_info(self, text):
         # Temporary debug method
@@ -244,15 +238,23 @@ class GUIManager:
         for element in self.elements:
             element.draw()
 
-    def update(self, dt: float):
-        for element in self.elements:
-            element.update(dt)
-
+    def update_active_obj_queue(self):
         if self.active_objects:
             obj = self.active_objects[0]
             if hasattr(obj, "get_production_queue_lines"):
                 lines = obj.get_production_queue_lines()
                 self.hud.add_queue_lines(lines)
+
+    def update_resources(self):
+        for resource, value in self.game_controller.resource_manager.get_all().items():
+            self.hud.set_resource_value(resource, value)
+
+    def update(self, dt: float):
+        for element in self.elements:
+            element.update(dt)
+
+        self.update_resources()
+        self.update_active_obj_queue()
 
     def handle_mouse_press(self, x, y, button):
         for button_element in reversed(self.hud.action_buttons):

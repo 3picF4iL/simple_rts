@@ -47,6 +47,10 @@ class Building(arcade.Sprite, Entity):
     def update(self, dt, unit_manager):
         self.process_queue(dt, unit_manager)
 
+    def kill(self):
+        self.production_queue.clear()
+        super().kill()
+
 # ------------------------------
 # Building types
 # ------------------------------

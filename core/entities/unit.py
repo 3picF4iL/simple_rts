@@ -6,6 +6,10 @@ from core.entities.common import Entity
 class Unit(arcade.Sprite, Entity):
     SPEED = 50  # px/s
     CREATION_TIME = 1  # seconds
+    COST = {
+        "wood": 1,
+        "food": 1
+    }
 
     def __init__(self, x, y, texture, color=arcade.color.BLUE, size=20):
         super().__init__(texture, center_x=x, center_y=y, size=size)
@@ -60,6 +64,10 @@ class Unit(arcade.Sprite, Entity):
 class TestUnit(Unit):
     NAME = "test_unit"
     DESCRIPTION = "test_unit_desc"
+    COST = {
+        "wood": 35,
+        "food": 10
+    }
 
     def __init__(self, x, y, size=20):
         color = arcade.color.GREEN
@@ -71,6 +79,10 @@ class TestUnit(Unit):
 class TestUnit2(Unit):
     NAME = "test_unit2"
     DESCRIPTION = "test_unit_desc2"
+    COST = {
+        "wood": 25,
+        "food": 10
+    }
 
     def __init__(self, x, y, size=20):
         color = arcade.color.ORANGE
@@ -78,4 +90,3 @@ class TestUnit2(Unit):
         super().__init__(x, y, texture, color, size)
         self.speed = 80
         self.actions = ["Move", "Attack", "Defend"]
-

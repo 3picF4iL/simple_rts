@@ -42,9 +42,19 @@ class InputManager:
                     x, y
                 )
 
-            self.gui.set_active_objects(self.selection.selected_objects)
-            self.selection.selecting = False
+        self.gui.set_active_objects(self.selection.selected_objects)
+        self.selection.selecting = False
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self._mouse_down:
             self.selection.update_selection(x, y)
+
+    def on_key_press(self, _key, modifiers):
+        pass
+
+    def on_key_release(self, _key, modifiers):
+        if _key == arcade.key.DELETE:
+            for obj in self.selection.selected_objects:
+                if hasattr(obj, "kill"):
+                    obj.kill()
+
