@@ -29,7 +29,7 @@ class GameView(arcade.View):
 
     def on_show_view(self):
         self.building_manager.add_building('barracks', 300, 300)
-        self.unit_manager.spawn_unit(200, 300)
+        self.unit_manager.spawn_unit('test_unit', 200, 300)
 
     def on_draw(self):
         self.clear()
