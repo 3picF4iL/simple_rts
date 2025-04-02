@@ -4,14 +4,19 @@ from utils.i18n import t
 from core.entities.common import Entity
 
 class Unit(arcade.Sprite, Entity):
+    SPEED = 50  # px/s
+    CREATION_TIME = 1  # seconds
+
     def __init__(self, x, y, texture, color=arcade.color.BLUE, size=20):
         super().__init__(texture, center_x=x, center_y=y, size=size)
-        self.speed = 50  # px/s
         self.target_x = x
         self.target_y = y
         self.selected = False
         self.color = color
         self.actions = ["[PLACEHOLDER] Move", "[PLACEHOLDER] Stop"]
+
+        # Mods
+        self.creation_time_mod = 1.0
 
     def update(self, delta_time, buildings):
         if not self._has_reached_target():
@@ -45,6 +50,11 @@ class Unit(arcade.Sprite, Entity):
     def draw(self):
         if self.selected:
             arcade.draw_lrbt_rectangle_outline(self.center_x, self.center_y, 24, 24, arcade.color.YELLOW, 2)
+
+    # Getters
+    @property
+    def final_creation_time(self):
+        return self.CREATION_TIME * self.creation_time_mod
 
 
 class TestUnit(Unit):

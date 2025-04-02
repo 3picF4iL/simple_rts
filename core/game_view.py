@@ -39,6 +39,8 @@ class GameView(arcade.View):
         self.gui.draw()
 
     def on_update(self, delta_time):
+        self.gui.update(delta_time)
+        self.building_manager.update(delta_time, self.unit_manager)
         self.unit_manager.update(delta_time, self.building_manager.buildings)
 
     def on_mouse_press(self, x, y, button, modifiers):

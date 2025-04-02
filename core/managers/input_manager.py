@@ -46,6 +46,5 @@ class InputManager:
             self.selection.selecting = False
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.gui.handle_mouse_motion(x, y, dx, dy)
         if self._mouse_down:
             self.selection.update_selection(x, y)

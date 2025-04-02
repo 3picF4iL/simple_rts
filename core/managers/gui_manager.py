@@ -115,6 +115,7 @@ class HUDLayout:
         self.resource_value_labels: dict[str, GUILabel] = {}
         self.active_info_labels: list[GUILabel] = []
         self.action_buttons: list[GUIButton] = []
+        self.queue_labels: list[GUILabel] = []
         self._init_resource_labels()
 
     def _init_resource_labels(self):
@@ -133,37 +134,50 @@ class HUDLayout:
         self.active_info_labels.clear()
         self.action_buttons.clear()
 
-        try:
-            for obj in objects:
-                if hasattr(obj, "get_info"):
-                    lines = obj.get_info()
-                    for idx, line in enumerate(reversed(lines)):
-                        font_size = 12 if idx != 0 else 8
-                        label = GUILabel(10, 50 + idx * 20, line, size=font_size)
-                        self.active_info_labels.append(label)
+        for obj in objects or []:
+            self._add_info_labels(obj)
+            self._add_action_buttons(obj, game_controller)
 
-                if hasattr(obj, "unit_production_options"):
-                    for i, unit_id in enumerate(obj.unit_production_options):
-                        unit_cls = game_controller.unit_manager.unit_map.get(unit_id)
-                        if unit_cls:
-                            button = GUIButton(
-                                x=10 + i * 170,
-                                y=10,
-                                width=160,
-                                height=30,
-                                label=unit_cls.NAME,
-                                action=lambda a=unit_id: game_controller.perform_action(
-                                    {"type": "create_unit", "unit_type": a}, obj
-                                )
-                            )
-                            self.action_buttons.append(button)
 
-        except Exception as e:
-            print("[HUDLayout] Active elements update error:", e)
+    def _add_info_labels(self, obj):
+        if hasattr(obj, "get_info"):
+            lines = obj.get_info()
+            for idx, line in enumerate(reversed(lines)):
+                font_size = 12 if idx != 0 else 8
+                label = GUILabel(10, 50 + idx * 20, line, size=font_size)
+                self.active_info_labels.append(label)
+
+    def _add_action_buttons(self, obj, game_controller):
+        if hasattr(obj, "unit_production_options"):
+            for i, unit_id in enumerate(obj.unit_production_options):
+                unit_cls = game_controller.unit_manager.unit_map.get(unit_id)
+                if unit_cls:
+                    button = GUIButton(
+                        x=10 + i * 170,
+                        y=10,
+                        width=160,
+                        height=30,
+                        label=unit_cls.NAME,
+                        action=lambda a=unit_id: game_controller.perform_action(
+                            {"type": "create_unit", "unit_type": a}, obj
+                        )
+                    )
+                    self.action_buttons.append(button)
+
+    def add_queue_lines(self, lines: list[str]):
+        self.queue_labels.clear()
+        for idx, line in enumerate(lines):
+            label = GUILabel(
+                x=self.window.width // 2 - 80,
+                y=10 + idx * 16,
+                text=line
+            )
+            self.queue_labels.append(label)
 
     def clear_active_elements(self):
         self.active_info_labels.clear()
         self.action_buttons.clear()
+        self.queue_labels.clear()
 
     def _draw_top_bar_bg(self):
         arcade.draw_lrbt_rectangle_filled(
@@ -189,6 +203,7 @@ class HUDLayout:
             self.resource_value_labels.values(),
             self.action_buttons,
             self.active_info_labels,
+            self.queue_labels
         ]:
             for item in group:
                 item.draw()
@@ -232,6 +247,12 @@ class GUIManager:
     def update(self, dt: float):
         for element in self.elements:
             element.update(dt)
+
+        if self.active_objects:
+            obj = self.active_objects[0]
+            if hasattr(obj, "get_production_queue_lines"):
+                lines = obj.get_production_queue_lines()
+                self.hud.add_queue_lines(lines)
 
     def handle_mouse_press(self, x, y, button):
         for button_element in reversed(self.hud.action_buttons):

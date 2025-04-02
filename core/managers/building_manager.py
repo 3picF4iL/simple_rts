@@ -29,3 +29,7 @@ class BuildingManager:
                     arcade.color.YELLOW,
                     2
                 )
+    def update(self, dt, unit_manager):
+        for building in self.buildings:
+            if hasattr(building, "update"):
+                building.update(dt, unit_manager)
