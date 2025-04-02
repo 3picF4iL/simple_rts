@@ -1,5 +1,10 @@
 {
     "barracks": "Koszary",
     "create_unit": "Stwórz jednostkę",
-    "building_selected": "Zaznaczony budynek"
+    "building_selected": "Zaznaczony budynek",
+    "wood": "Drewno",
+    "food": "Jedzenie",
+    "gold": "Złoto",
+    "stone": "Kamień",
+    "barracks_hover_info": "Tworzy jednostki piechoty"
   }
