@@ -40,10 +40,10 @@ class Barracks(MilitaryBuilding):
         super().__init__(x, y, width, height)
         self.texture = texture
 
-    def get_hover_info(self) -> str:
-        return f"{t(self.name)}: {t('barracks_hover_info')}"
+    def get_info(self):
+        return [t("barracks"), t("barracks_hover_info")]
 
-    def get_actions(self) -> list:
+    def get_actions(self):
         return [
-            {"label": f"{t('create_unit')}", "action": "create_unit"}
+            {"label": t("create_unit"), "action": "create_unit"}
         ]
