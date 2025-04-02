@@ -86,14 +86,14 @@ class GUIButton(GUIElement):
 
 
 class GUILabel(GUIElement):
-    def __init__(self, x, y, text: str):
+    def __init__(self, x, y, text: str, size: int = 12):
         super().__init__(x, y, width=0, height=0)
         self.text_obj = arcade.Text(
             text,
             x,
             y,
             arcade.color.WHITE,
-            12,
+            size,
             anchor_y="bottom"
         )
 
@@ -136,21 +136,28 @@ class HUDLayout:
         try:
             for obj in objects:
                 if hasattr(obj, "get_info"):
-                    for idx, line in enumerate(obj.get_info()):
-                        label = GUILabel(10, 50 + idx * 20, line)
+                    lines = obj.get_info()
+                    for idx, line in enumerate(reversed(lines)):
+                        font_size = 12 if idx != 0 else 8
+                        label = GUILabel(10, 50 + idx * 20, line, size=font_size)
                         self.active_info_labels.append(label)
 
-                if hasattr(obj, "get_actions"):
-                    for i, action in enumerate(obj.get_actions()):
-                        button = GUIButton(
-                            x=10 + i * 170,
-                            y=10,
-                            width=160,
-                            height=30,
-                            label=action["label"],
-                            action=lambda a=action: game_controller.perform_action(a["action"], obj)
-                        )
-                        self.action_buttons.append(button)
+                if hasattr(obj, "unit_production_options"):
+                    for i, unit_id in enumerate(obj.unit_production_options):
+                        unit_cls = game_controller.unit_manager.unit_map.get(unit_id)
+                        if unit_cls:
+                            button = GUIButton(
+                                x=10 + i * 170,
+                                y=10,
+                                width=160,
+                                height=30,
+                                label=unit_cls.NAME,
+                                action=lambda a=unit_id: game_controller.perform_action(
+                                    {"type": "create_unit", "unit_type": a}, obj
+                                )
+                            )
+                            self.action_buttons.append(button)
+
         except Exception as e:
             print("[HUDLayout] Active elements update error:", e)
 
@@ -158,27 +165,33 @@ class HUDLayout:
         self.active_info_labels.clear()
         self.action_buttons.clear()
 
-    def draw(self):
+    def _draw_top_bar_bg(self):
         arcade.draw_lrbt_rectangle_filled(
             0, self.window.width,
             self.window.height - self.top_bar_height,
             self.window.height,
             arcade.color.DARK_SLATE_GRAY
         )
+
+    def _draw_bottom_bar_bg(self):
         arcade.draw_lrbt_rectangle_filled(
             0, self.window.width,
             0, self.bottom_bar_height,
             arcade.color.DIM_GRAY
         )
 
-        for label in self.resource_name_labels:
-            label.draw()
-        for label in self.resource_value_labels.values():
-            label.draw()
-        for label in self.active_info_labels:
-            label.draw()
-        for button in self.action_buttons:
-            button.draw()
+    def draw(self):
+        self._draw_top_bar_bg()
+        self._draw_bottom_bar_bg()
+
+        for group in [
+            self.resource_name_labels,
+            self.resource_value_labels.values(),
+            self.action_buttons,
+            self.active_info_labels,
+        ]:
+            for item in group:
+                item.draw()
 
     def is_in_hud_area(self, x, y):
         return y >= self.window.height - self.top_bar_height or y <= self.bottom_bar_height
@@ -236,15 +249,11 @@ class GUIManager:
             if button_element.visible and button_element.contains_point(x, y):
                 if button_element.on_mouse_release(x, y, button):
                     return True
-        for element in reversed(self.elements):
+        for element in self.elements:
             if element.visible and element.contains_point(x, y):
                 if element.on_mouse_release(x, y, button):
                     return True
         return False
-
-    def handle_mouse_motion(self, x, y, dx, dy):
-        for element in self.elements:
-            element.on_mouse_motion(x, y, dx, dy)
 
     def is_mouse_over_gui(self, x, y):
         return (
