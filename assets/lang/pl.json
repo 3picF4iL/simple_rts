@@ -1,10 +1,14 @@
 {
     "barracks": "Koszary",
+    "barracks_info": "Tworzy jednostki piechoty",
     "create_unit": "Stwórz jednostkę",
     "building_selected": "Zaznaczony budynek",
     "wood": "Drewno",
     "food": "Jedzenie",
     "gold": "Złoto",
     "stone": "Kamień",
-    "barracks_hover_info": "Tworzy jednostki piechoty"
+    "test_unit": "Jednostka testowa",
+    "test_unit2": "Jednostka testowa 2",
+    "test_unit_desc": "To jest testowa jednostka prototypowa.",
+    "test_unit_desc2": "To jest testowa jednostka 2 prototypowa."
   }

@@ -1,29 +1,27 @@
 import arcade
 from utils.i18n import t
+from core.entities.unit import *
+from core.entities.common import Entity
 
-class Building(arcade.Sprite):
+class Building(arcade.Sprite, Entity):
     def __init__(self, x, y, width=60, height=60):
         super().__init__(center_x=x, center_y=y, width=width, height=height)
         self.selected = False
-
-    def get_hover_info(self) -> str:
-        return "Building"
-
-    def get_actions(self) -> list:
-        return []
 
 # ------------------------------
 # Building types
 # ------------------------------
 
 class MilitaryBuilding(Building):
-    def get_hover_info(self) -> str:
-        return "Military Building"
+    def __init__(self, x, y, width=60, height=60):
+        super().__init__(x, y, width, height)
+        self.building_type = "military"
 
 
 class EconomicBuilding(Building):
-    def get_hover_info(self) -> str:
-        return "Economic Building"
+    def __init__(self, x, y, width=60, height=60):
+        super().__init__(x, y, width, height)
+        self.building_type = "economic"
 
 
 # ------------------------------
@@ -31,19 +29,13 @@ class EconomicBuilding(Building):
 # ------------------------------
 
 class Barracks(MilitaryBuilding):
+    NAME = 'barracks'
+    DESCRIPTION = 'barracks_info'
     def __init__(self, x, y):
         width = 100
         height = 100
-        self.name = "barracks"
 
         texture = arcade.make_soft_square_texture(100, arcade.color.RED, 255)
         super().__init__(x, y, width, height)
         self.texture = texture
-
-    def get_info(self):
-        return [t("barracks"), t("barracks_hover_info")]
-
-    def get_actions(self):
-        return [
-            {"label": t("create_unit"), "action": "create_unit"}
-        ]
+        self.unit_production_options = ["test_unit", "test_unit2"]
