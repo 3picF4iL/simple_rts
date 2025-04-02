@@ -1,4 +1,5 @@
 import arcade
+from utils.calc import dist
 
 
 class Unit(arcade.Sprite):
@@ -19,14 +20,13 @@ class Unit(arcade.Sprite):
     def _has_reached_target(self):
         dx = self.target_x - self.center_x
         dy = self.target_y - self.center_y
-        return (dx**2 + dy**2) ** 0.5 < 1
+        return dist(dx, dy) < 1
 
     def _move_towards_target(self, delta_time):
         dx = self.target_x - self.center_x
         dy = self.target_y - self.center_y
-        distance = (dx ** 2 + dy ** 2) ** 0.5
-        self.last_dx = (dx / distance) * self.speed * delta_time
-        self.last_dy = (dy / distance) * self.speed * delta_time
+        self.last_dx = (dx / dist(dx, dy)) * self.speed * delta_time
+        self.last_dy = (dy / dist(dx, dy)) * self.speed * delta_time
         self.center_x += self.last_dx
         self.center_y += self.last_dy
 
