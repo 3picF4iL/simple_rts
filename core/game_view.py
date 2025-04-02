@@ -21,11 +21,11 @@ class GameView(arcade.View):
         self.unit_manager = UnitManager()
         self.selection_manager = SelectionManager()
         self.building_manager = BuildingManager()
-        self.gui = GUIManager(self.window)
-        self.controller = GameController(self.unit_manager, self.building_manager, self.gui)
+        self.controller = GameController(self.unit_manager, self.building_manager, None)
+        self.gui = GUIManager(self.window, self.controller)
+        self.controller.gui_manager = self.gui
 
     def on_show_view(self):
-        print("On show")
         self.building_manager.add_building('barracks', 300, 300)
         self.unit_manager.spawn_unit(200, 300)
 
@@ -66,6 +66,8 @@ class GameView(arcade.View):
                     self.selection_manager.start_y,
                     x, y
                 )
+
+        self.gui.set_active_objects(self.selection_manager.selected_objects)
 
         self.selection_manager.selecting = False
 
