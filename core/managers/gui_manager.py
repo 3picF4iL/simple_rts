@@ -203,6 +203,10 @@ class GUIManager:
         self.active_objects = objects
         self.hud.set_active_elements(objects, self.game_controller)
 
+    def set_click_info(self, text):
+        # Temporary debug method
+        print(text)
+
     def clear_active_objects(self):
         self.active_objects.clear()
         self.hud.clear_active_elements()
