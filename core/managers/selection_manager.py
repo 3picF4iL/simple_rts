@@ -60,6 +60,9 @@ class SelectionManager:
         for obj in objects:
             obj.selected = False
 
+    def get_selected(self):
+        return self.selected_objects
+
     def _point_in_box(self, cx, cy, x1, y1, x2, y2):
         return min(x1, x2) < cx < max(x1, x2) and min(y1, y2) < cy < max(y1, y2)
 

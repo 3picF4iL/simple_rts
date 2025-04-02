@@ -1,12 +1,17 @@
 import arcade
-from core.entities.building import Building
+from core.entities.building import *
 
 class BuildingManager:
     def __init__(self):
         self.buildings = arcade.SpriteList(use_spatial_hash=True)
+        self.buildings_map = {
+            "barracks": Barracks
+        }
 
-    def add_building(self, x, y):
-        building = Building(x, y)
+    def add_building(self, name, x, y):
+        building = self.buildings_map.get(name, None)(x, y)
+        if not building:
+            raise Exception("Building not available!")
         self.buildings.append(building)
 
     def get_buildings(self):

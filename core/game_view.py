@@ -2,6 +2,8 @@ import arcade
 from core.managers.building_manager import BuildingManager
 from core.managers.unit_manager import UnitManager
 from core.managers.selection_manager import SelectionManager
+from core.managers.gui_manager import GUIManager
+from core.game_controller import GameController
 from utils.i18n import t
 
 
@@ -19,19 +21,20 @@ class GameView(arcade.View):
         self.unit_manager = UnitManager()
         self.selection_manager = SelectionManager()
         self.building_manager = BuildingManager()
+        self.gui = GUIManager(self.window)
+        self.controller = GameController(self.unit_manager, self.building_manager, self.gui)
 
     def on_show_view(self):
         print("On show")
-        self.building_manager.add_building(300, 300)
-        self.building_manager.add_building(600, 400)
-        self.unit_manager.spawn_unit(100, 300)
-        self.unit_manager.spawn_unit(400, 100)
+        self.building_manager.add_building('barracks', 300, 300)
+        self.unit_manager.spawn_unit(200, 300)
 
     def on_draw(self):
         self.clear()
         self.unit_manager.draw()
         self.building_manager.draw()
         self.selection_manager.draw()
+        self.gui.draw()
 
     def on_update(self, delta_time):
         self.unit_manager.update(delta_time, self.building_manager.buildings)
