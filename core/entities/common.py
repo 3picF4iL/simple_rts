@@ -4,9 +4,10 @@ from utils.i18n import t
 class Entity:
     NAME = "Name placeholder"
     DESCRIPTION = "Description placeholder"
+    ENTITY_TYPE = ''
 
     def __init__(self):
-        pass
+        self.production_options = []
 
     def get_info(self):
         return [t(f"{self.name}"), t(f"{self.description}")]

@@ -4,6 +4,7 @@ from core.entities.unit import *
 from core.entities.common import Entity
 
 class Building(arcade.Sprite, Entity):
+    ENTITY_TYPE = 'building'
     def __init__(self, x, y, width=60, height=60):
         super().__init__(center_x=x, center_y=y, width=width, height=height)
         self.selected = False
@@ -55,13 +56,13 @@ class Building(arcade.Sprite, Entity):
 # Building types
 # ------------------------------
 
-class MilitaryBuilding(Building):
+class Military(Building):
     def __init__(self, x, y, width=60, height=60):
         super().__init__(x, y, width, height)
         self.building_type = "military"
 
 
-class EconomicBuilding(Building):
+class Economic(Building):
     def __init__(self, x, y, width=60, height=60):
         super().__init__(x, y, width, height)
         self.building_type = "economic"
@@ -71,14 +72,27 @@ class EconomicBuilding(Building):
 # Buildings list
 # ------------------------------
 
-class Barracks(MilitaryBuilding):
+class Barracks(Military):
     NAME = 'barracks'
-    DESCRIPTION = 'barracks_info'
+    DESCRIPTION = 'barracks_desc'
     def __init__(self, x, y):
         width = 100
         height = 100
-
-        texture = arcade.make_soft_square_texture(100, arcade.color.RED, 255)
+        color = arcade.color.RED
+        texture = arcade.make_soft_square_texture(100, color, 255)
         super().__init__(x, y, width, height)
         self.texture = texture
-        self.unit_production_options = ["test_unit", "test_unit2"]
+        self.production_options = ["test_unit", "test_unit2"]
+
+
+class TownCenter(Economic):
+    NAME = 'town_center'
+    DESCRIPTION = 'town_center_desc'
+    def __init__(self, x, y):
+        width = 100
+        height = 100
+        color = arcade.color.BLUE
+        texture = arcade.make_soft_square_texture(100, color, 255)
+        super().__init__(x, y, width, height)
+        self.texture = texture
+        self.production_options = ["villager"]

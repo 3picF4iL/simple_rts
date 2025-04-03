@@ -5,7 +5,8 @@ class BuildingManager:
     def __init__(self):
         self.buildings = arcade.SpriteList(use_spatial_hash=True)
         self.buildings_map = {
-            "barracks": Barracks
+            "barracks": Barracks,
+            "town_center": TownCenter
         }
 
     def add_building(self, name, x, y):

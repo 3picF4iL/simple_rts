@@ -10,7 +10,7 @@ class Unit(arcade.Sprite, Entity):
         "wood": 1,
         "food": 1
     }
-
+    ENTITY_TYPE = 'unit'
     def __init__(self, x, y, texture, color=arcade.color.BLUE, size=20):
         super().__init__(texture, center_x=x, center_y=y, size=size)
         self.target_x = x
@@ -62,6 +62,7 @@ class Unit(arcade.Sprite, Entity):
 
 
 class TestUnit(Unit):
+    CREATION_TIME = 7
     NAME = "test_unit"
     DESCRIPTION = "test_unit_desc"
     COST = {
@@ -77,8 +78,9 @@ class TestUnit(Unit):
         self.actions = ["Move", "Attack", "Defend"]
 
 class TestUnit2(Unit):
+    CREATION_TIME = 3
     NAME = "test_unit2"
-    DESCRIPTION = "test_unit_desc2"
+    DESCRIPTION = "test_unit2_desc"
     COST = {
         "wood": 25,
         "food": 10
@@ -90,3 +92,34 @@ class TestUnit2(Unit):
         super().__init__(x, y, texture, color, size)
         self.speed = 80
         self.actions = ["Move", "Attack", "Defend"]
+
+
+class Military(Unit):
+    def __init__(self, x, y, texture, color=arcade.color.RED_DEVIL, size=20):
+        super().__init__(x, y, texture, color, size)
+        self.unit_type = "military"
+
+
+
+class Civil(Unit):
+    def __init__(self, x, y, texture, color=arcade.color.DARK_GREEN, size=20):
+        super().__init__(x, y, texture, color, size)
+        self.unit_type = "civil"
+
+
+class Villager(Civil):
+    NAME = "villager"
+    DESCRIPTION = "villager_desc"
+    COST = {
+        "food": 50
+    }
+
+    CREATION_TIME = 4
+
+    def __init__(self, x, y, size=10):
+        color = arcade.color.DARK_RED
+        texture = arcade.make_soft_square_texture(size, color, 255)
+        super().__init__(x, y, texture, color, size)
+        self.speed = 80
+        self.actions = ["MOVE", "GATHER", "WAIT", "IDLE"]
+        self.production_options = ["barracks"]
