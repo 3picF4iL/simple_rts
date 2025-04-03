@@ -4,14 +4,14 @@ from core.entities.unit import *
 class UnitManager:
     def __init__(self):
         self.units = arcade.SpriteList()
-        self.unit_map = {
+        self.units_map = {
             "test_unit": TestUnit,
             "test_unit2": TestUnit2,
+            "villager": Villager
         }
 
-
     def spawn_unit(self, unit_type, x, y):
-        unit_cls = self.unit_map.get(unit_type)
+        unit_cls = self.units_map.get(unit_type)
         if not unit_cls:
             print(f"[UnitManager] Unknown unit type: {unit_type}")
             return

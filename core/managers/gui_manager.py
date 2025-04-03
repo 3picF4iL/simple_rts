@@ -139,21 +139,23 @@ class HUDLayout:
                 self.active_info_labels.append(label)
 
     def _add_action_buttons(self, obj, game_controller):
-        if hasattr(obj, "unit_production_options"):
-            for i, unit_id in enumerate(obj.unit_production_options):
-                unit_cls = game_controller.unit_manager.unit_map.get(unit_id)
-                if unit_cls:
-                    button = GUIButton(
-                        x=10 + i * 170,
-                        y=10,
-                        width=160,
-                        height=30,
-                        label=unit_cls.NAME,
-                        action=lambda a=unit_id: game_controller.perform_action(
-                            {"type": "create_unit", "unit_type": a}, obj
-                        )
-                    )
-                    self.action_buttons.append(button)
+        if not hasattr(obj, "production_options"):
+            return
+
+        for i, option in enumerate(obj.production_options):
+            cls = game_controller.get_entity_class(option)
+            if not cls:
+                continue
+
+            button = GUIButton(
+                x=10 + i * 170,
+                y=10,
+                width=160,
+                height=30,
+                label=cls.NAME,
+                action=lambda c=cls: game_controller.handle_production_click(c, obj)
+            )
+            self.action_buttons.append(button)
 
     def add_queue_lines(self, lines: list[str]):
         self.queue_labels.clear()
