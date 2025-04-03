@@ -30,8 +30,9 @@ class GameView(arcade.View):
         self.input = InputManager(self.gui, self.selection_manager, self.unit_manager, self.building_manager)
 
     def on_show_view(self):
-        self.building_manager.add_building('barracks', 300, 300)
-        self.unit_manager.spawn_unit('test_unit', 200, 300)
+        self.building_manager.add_building('town_center', 300, 300)
+        self.building_manager.add_building('barracks', 700, 350)
+        self.unit_manager.spawn_unit('villager', 200, 300)
 
     def on_draw(self):
         self.clear()
