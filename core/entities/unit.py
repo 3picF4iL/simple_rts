@@ -52,6 +52,7 @@ class Unit(arcade.Sprite, Entity):
         self.center_y -= self.last_dy
 
     def draw(self):
+        super().draw()
         if self.selected:
             arcade.draw_lrbt_rectangle_outline(self.center_x, self.center_y, 24, 24, arcade.color.YELLOW, 2)
 
@@ -95,14 +96,16 @@ class TestUnit2(Unit):
 
 
 class Military(Unit):
-    def __init__(self, x, y, texture, color=arcade.color.RED_DEVIL, size=20):
+    color = arcade.color.RED_DEVIL
+    def __init__(self, x, y, texture, color, size=20):
         super().__init__(x, y, texture, color, size)
         self.unit_type = "military"
 
 
 
 class Civil(Unit):
-    def __init__(self, x, y, texture, color=arcade.color.DARK_GREEN, size=20):
+    color = arcade.color.DARK_GREEN
+    def __init__(self, x, y, texture, color, size=20):
         super().__init__(x, y, texture, color, size)
         self.unit_type = "civil"
 
@@ -121,5 +124,5 @@ class Villager(Civil):
         texture = arcade.make_soft_square_texture(size, color, 255)
         super().__init__(x, y, texture, color, size)
         self.speed = 80
-        self.actions = ["MOVE", "GATHER", "WAIT", "IDLE"]
+        self.actions = ["MOVE", "GATHER", "WAIT", "IDLE", "BUILD", "BUSY"]
         self.production_options = ["barracks"]

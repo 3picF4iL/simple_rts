@@ -1,11 +1,12 @@
 import arcade
 
 class InputManager:
-    def __init__(self, gui_manager, selection_manager, unit_manager, building_manager):
+    def __init__(self, gui_manager, selection_manager, unit_manager, building_manager, build_mode_manager):
         self.gui = gui_manager
         self.selection = selection_manager
         self.units = unit_manager
         self.buildings = building_manager
+        self.build_mode_manager = build_mode_manager
         self._mouse_down = False
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -14,9 +15,12 @@ class InputManager:
             return self.gui.handle_mouse_press(x, y, button)
 
         if button == arcade.MOUSE_BUTTON_LEFT:
-            self.selection.start_selection(x, y)
+            if not self.build_mode_manager.is_active():
+                self.selection.start_selection(x, y)
+
         elif button == arcade.MOUSE_BUTTON_RIGHT:
-            self.units.command_move(self.selection.selected_objects, x, y)
+            if not self.build_mode_manager.is_active():
+                self.units.command_move(self.selection.selected_objects, x, y)
 
     def on_mouse_release(self, x, y, button, modifiers):
         self._mouse_down = False
@@ -24,30 +28,39 @@ class InputManager:
             if not self.selection.selecting:
                 return self.gui.handle_mouse_release(x, y, button)
 
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            dx = abs(self.selection.start_x - x)
-            dy = abs(self.selection.start_y - y)
+        if self.selection.selecting:
+            if button == arcade.MOUSE_BUTTON_LEFT:
+                dx = abs(self.selection.start_x - x)
+                dy = abs(self.selection.start_y - y)
 
-            if dx < 5 and dy < 5:
-                self.selection.select_by_click(
-                    self.units.get_units(),
-                    self.buildings.get_buildings(),
-                    x, y
-                )
-            else:
-                self.selection.select_by_box(
-                    self.units.get_units(),
-                    self.selection.start_x,
-                    self.selection.start_y,
-                    x, y
-                )
+                if dx < 5 and dy < 5:
+                    self.selection.select_by_click(
+                        self.units.get_units(),
+                        self.buildings.get_buildings(),
+                        x, y
+                    )
+                else:
+                    self.selection.select_by_box(
+                        self.units.get_units(),
+                        self.selection.start_x,
+                        self.selection.start_y,
+                        x, y
+                    )
 
-        self.gui.set_active_objects(self.selection.selected_objects)
-        self.selection.selecting = False
+            self.gui.set_active_objects(self.selection.selected_objects)
+            self.selection.selecting = False
+        elif self.build_mode_manager.is_active():
+            self.build_mode_manager.place()
 
     def on_mouse_motion(self, x, y, dx, dy):
-        if self._mouse_down:
+        if self._mouse_down and self.selection.selecting:
             self.selection.update_selection(x, y)
+
+        if self.build_mode_manager.is_active():
+            self.build_mode_manager.update(
+                x, y,
+                [self.units.units, self.buildings.buildings]
+            )
 
     def on_key_press(self, _key, modifiers):
         pass

@@ -52,6 +52,9 @@ class Building(arcade.Sprite, Entity):
         self.production_queue.clear()
         super().kill()
 
+    def draw():
+        super().draw()
+
 # ------------------------------
 # Building types
 # ------------------------------

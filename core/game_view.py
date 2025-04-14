@@ -5,6 +5,7 @@ from core.managers.selection_manager import SelectionManager
 from core.managers.gui_manager import GUIManager
 from core.managers.input_manager import InputManager
 from core.managers.resource_manager import ResourceManager
+from core.managers.buildmode_manager import BuildModeManager
 from core.game_controller import GameController
 from utils.i18n import t
 
@@ -24,10 +25,11 @@ class GameView(arcade.View):
         self.selection_manager = SelectionManager()
         self.building_manager = BuildingManager()
         self.resource_manager = ResourceManager()
-        self.controller = GameController(self.unit_manager, self.building_manager, self.resource_manager, None)
+        self.build_mode_manager = BuildModeManager(self.building_manager)
+        self.controller = GameController(self.unit_manager, self.building_manager, self.resource_manager, None, self.build_mode_manager)
         self.gui = GUIManager(self.window, self.controller)
         self.controller.gui_manager = self.gui
-        self.input = InputManager(self.gui, self.selection_manager, self.unit_manager, self.building_manager)
+        self.input = InputManager(self.gui, self.selection_manager, self.unit_manager, self.building_manager, self.build_mode_manager)
 
     def on_show_view(self):
         self.building_manager.add_building('town_center', 300, 300)
@@ -39,6 +41,7 @@ class GameView(arcade.View):
         self.unit_manager.draw()
         self.building_manager.draw()
         self.selection_manager.draw()
+        self.build_mode_manager.draw()
         self.gui.draw()
 
     def on_update(self, delta_time):

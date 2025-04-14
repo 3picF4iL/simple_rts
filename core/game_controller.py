@@ -1,11 +1,12 @@
+from core.managers.buildmode_manager import BuildModeManager
+
 class GameController:
-    def __init__(self, unit_manager, building_manager, resource_manager, gui_manager):
+    def __init__(self, unit_manager, building_manager, resource_manager, gui_manager, build_mode_manager):
         self.unit_manager = unit_manager
         self.building_manager = building_manager
         self.gui_manager = gui_manager
         self.resource_manager = resource_manager
-
-        self.build_mode = None
+        self.build_mode_manager = build_mode_manager
 
     def handle_production_click(self, entity_cls, source_obj):
         if entity_cls.ENTITY_TYPE == "unit":
@@ -17,8 +18,8 @@ class GameController:
 
     def get_entity_class(self, name):
         return (
-            self.unit_manager.units_map.get(name)
-            or self.building_manager.buildings_map.get(name)
+            self.unit_manager.unit_map.get(name)
+            or self.building_manager.building_map.get(name)
         )
 
     def __perform_action(self, action_dict, source_obj):
@@ -44,5 +45,5 @@ class GameController:
         self.gui_manager.clear_elements()
         self.gui_manager.set_active_objects([selected_object])
 
-    def set_build_mode(self, cls):
-        print("Not implemented")
+    def set_build_mode(self, entity_cls):
+        self.build_mode_manager.start(entity_cls)

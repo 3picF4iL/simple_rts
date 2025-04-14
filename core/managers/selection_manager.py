@@ -1,4 +1,5 @@
 import arcade
+import arcade.sprite_list
 
 class SelectionManager:
     def __init__(self):
