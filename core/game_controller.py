@@ -1,48 +1,76 @@
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class ProductionRequest:
+    name: str
+    type: str
+    cost: dict
+    source: Optional[object]
+
+
 class GameController:
-    def __init__(self, unit_manager, building_manager, resource_manager, gui_manager):
+    def __init__(self, unit_manager, building_manager, resource_manager, gui_manager, build_mode_manager, entity_factory):
         self.unit_manager = unit_manager
         self.building_manager = building_manager
         self.gui_manager = gui_manager
         self.resource_manager = resource_manager
+        self.build_mode_manager = build_mode_manager
+        self.factory = entity_factory
+        self.pending_request: Optional[ProductionRequest] = None
 
-        self.build_mode = None
+    def handle_production_click(self, entity_name: str, source_obj):
+        type = self.factory.get_type(entity_name)
+        cost = self.factory.get_cost(entity_name)
 
-    def handle_production_click(self, entity_cls, source_obj):
-        if entity_cls.ENTITY_TYPE == "unit":
-            if self.can_afford(entity_cls):
-                self.pay(entity_cls.COST)
-                source_obj.add_to_queue(entity_cls)
-        elif entity_cls.ENTITY_TYPE == "building":
-            self.set_build_mode(entity_cls)
-
-    def get_entity_class(self, name):
-        return (
-            self.unit_manager.units_map.get(name)
-            or self.building_manager.buildings_map.get(name)
+        self.pending_request = ProductionRequest(
+            name=entity_name,
+            type=type,
+            cost=cost,
+            source=source_obj
         )
 
-    def __perform_action(self, action_dict, source_obj):
-        # TODO: This method should be used for actions different than production
-        # Disabling for now
-        if action_dict["type"] == "create_unit":
-            unit_cls = self.unit_manager.unit_map[action_dict.get("unit_type")]
+        self.confirm_production()
 
-            if self.can_afford(unit_cls):
-                self.pay(unit_cls.COST)
-                source_obj.add_to_queue(unit_cls)
-                self.gui_manager.set_click_info(f"Added to queue: {unit_cls.NAME}")
-            else:
-                self.gui_manager.set_click_info(f"Not enough resources for {unit_cls.NAME}")
+    def confirm_production(self):
+        req = self.pending_request
+        if not req:
+            return
 
-    def can_afford(self, unit_cls):
-        return self.resource_manager.can_afford(unit_cls.COST)
+        if not self.resource_manager.can_afford(req.cost):
+            self.gui_manager.set_click_info(f"Not enough resources for {req.name}")
+            self.pending_request = None
+            return
+        
+        print(req)
 
-    def pay(self, costs):
-        self.resource_manager.pay(costs)
+        if "unit" in req.type:
+            self.resource_manager.pay(req.cost)
+            req.source.add_to_queue(req.name)
+            #self.gui_manager.set_click_info(f"Queued: {req.name}")
+            self.pending_request = None
+
+        elif "building" in req.type:
+            self.set_build_mode(req.name)
+            #self.gui_manager.set_click_info(f"Enter build mode: {req.name}")
+
+    def try_place_building(self):
+        req = self.pending_request
+        if not req or "building" not in req.type:
+            return
+
+        if not self.resource_manager.can_afford(req.cost):
+            self.gui_manager.set_click_info(f"Not enough resources to place {req.name}")
+            return
+
+        self.resource_manager.pay(req.cost)
+        self.build_mode_manager.place()
+        #self.gui_manager.set_click_info(f"Placed: {req.name}")
+        self.pending_request = None
+
+    def set_build_mode(self, entity_name):
+        self.build_mode_manager.start(entity_name)
 
     def build_gui_for(self, selected_object):
         self.gui_manager.clear_elements()
         self.gui_manager.set_active_objects([selected_object])
-
-    def set_build_mode(self, cls):
-        print("Not implemented")

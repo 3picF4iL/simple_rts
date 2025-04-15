@@ -1,0 +1,40 @@
+---
+test_unit:
+  name: "test_unit"
+  description: "test_unit_desc"
+  type: ["unit", "military"]
+  creation_time: 7
+  speed: 100
+  color: "GREEN"
+  size: 20
+  cost:
+    wood: 35
+    food: 10
+  actions: ["Move", "Attack", "Defend"]
+
+
+test_unit2:
+  name: "test_unit2"
+  description: "test_unit2_desc"
+  type: ["unit", "military"]
+  creation_time: 2
+  speed: 40
+  color: "ORANGE"
+  size: 20
+  cost:
+    wood: 45
+    food: 10
+  actions: ["Move", "Attack", "Defend"]
+
+villager:
+  name: "villager"
+  description: "villager_desc"
+  type: ["unit", "civilian"]
+  creation_time: 4
+  speed: 80
+  color: "DARK_RED"
+  size: 10
+  cost:
+    food: 50
+  actions: ["MOVE", "GATHER", "WAIT", "IDLE", "BUILD", "BUSY"]
+  production_options: ["barracks"]

@@ -1,48 +1,56 @@
 import arcade
 from utils.i18n import t
-from core.entities.unit import *
-from core.entities.common import Entity
 
-class Building(arcade.Sprite, Entity):
+class Building(arcade.Sprite):
     ENTITY_TYPE = 'building'
-    def __init__(self, x, y, width=60, height=60):
-        super().__init__(center_x=x, center_y=y, width=width, height=height)
+
+    def __init__(self, x, y, config):
+        size = config.get("size", 60)
+        color = getattr(arcade.color, config.get("color", "WHITE"))
+        texture = arcade.make_soft_square_texture(size, color, 255)
+
+        super().__init__(texture, center_x=x, center_y=y, width=size, height=size)
+
         self.selected = False
+        self.assembly_point = None
+        self.name = config.get("name", "building")
+        self.description = config.get("description", "")
+        self.type = config.get("type", [])
+        self.production_options = config.get("production_options", [])
         self.production_queue = []
         self.base_production_time = 1.0
         self.spawn_point = [self.center_x + 100, self.center_y]
 
-    def add_to_queue(self, unit_cls):
+        self.entity_factory = None  # to be injected externally
+
+    def add_to_queue(self, unit_name):
         self.production_queue.append({
-            "unit_cls": unit_cls,
+            "unit_name": unit_name,
             "progress": 0.0,
             "result": "0"
-            })
+        })
 
     def process_queue(self, dt, unit_manager):
-        if not self.production_queue:
+        if not self.production_queue or not self.entity_factory:
             return
 
         current = self.production_queue[0]
+        creation_time = self.entity_factory.get_creation_time(current["unit_name"])
         current["progress"] += dt * self.base_production_time
 
-        if current["progress"] >= current["unit_cls"].CREATION_TIME:
-            unit_manager.spawn_unit(current["unit_cls"].NAME, *self.spawn_point)
+        if current["progress"] >= creation_time:
+            spawn_point = self.assembly_point if self.assembly_point else self.spawn_point
+            unit = self.entity_factory.create_unit(current["unit_name"], *spawn_point)
+            unit_manager.units.append(unit)
             self.production_queue.pop(0)
             return
 
-        current["result"] = f"{min(99, int(current['progress'] / current['unit_cls'].CREATION_TIME * 100))}"
+        current["result"] = f"{min(99, int(current['progress'] / creation_time * 100))}"
 
     def get_production_queue_lines(self):
         lines = []
-        if not self.production_queue:
-            return lines
-
         for q in self.production_queue[:5]:
-            unit_cls = q["unit_cls"]
-            if not unit_cls:
-                continue
-            lines.append(f"{unit_cls.NAME} ({q['result']}%)")
+            lines.append(f"{q['unit_name']} ({q['result']}%)")
         return lines
 
     def update(self, dt, unit_manager):
@@ -52,47 +60,16 @@ class Building(arcade.Sprite, Entity):
         self.production_queue.clear()
         super().kill()
 
-# ------------------------------
-# Building types
-# ------------------------------
+    def set_assembly_point(self, x, y):
+        self.assembly_point.append(x, y)
 
-class Military(Building):
-    def __init__(self, x, y, width=60, height=60):
-        super().__init__(x, y, width, height)
-        self.building_type = "military"
-
-
-class Economic(Building):
-    def __init__(self, x, y, width=60, height=60):
-        super().__init__(x, y, width, height)
-        self.building_type = "economic"
-
-
-# ------------------------------
-# Buildings list
-# ------------------------------
-
-class Barracks(Military):
-    NAME = 'barracks'
-    DESCRIPTION = 'barracks_desc'
-    def __init__(self, x, y):
-        width = 100
-        height = 100
-        color = arcade.color.RED
-        texture = arcade.make_soft_square_texture(100, color, 255)
-        super().__init__(x, y, width, height)
-        self.texture = texture
-        self.production_options = ["test_unit", "test_unit2"]
-
-
-class TownCenter(Economic):
-    NAME = 'town_center'
-    DESCRIPTION = 'town_center_desc'
-    def __init__(self, x, y):
-        width = 100
-        height = 100
-        color = arcade.color.BLUE
-        texture = arcade.make_soft_square_texture(100, color, 255)
-        super().__init__(x, y, width, height)
-        self.texture = texture
-        self.production_options = ["villager"]
+    def draw(self):
+        super().draw()
+        if self.selected:
+            arcade.draw_lrbt_rectangle_outline(
+                self.center_x - self.width // 2,
+                self.center_x + self.width // 2,
+                self.center_y - self.height // 2,
+                self.center_y + self.height // 2,
+                arcade.color.YELLOW, 2
+            )

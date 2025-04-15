@@ -22,7 +22,7 @@ class GUIElement:
 
 
 class GUIButton(GUIElement):
-    def __init__(self, x, y, width, height, label: str, action: Callable):
+    def __init__(self, x, y, width, height, label: str, action: Callable = None):
         super().__init__(x, y, width, height)
         self.label = label
         self.action = action
@@ -143,19 +143,32 @@ class HUDLayout:
             return
 
         for i, option in enumerate(obj.production_options):
-            cls = game_controller.get_entity_class(option)
-            if not cls:
+            definition = game_controller.factory.get_definition(option)
+            if not definition:
                 continue
+            cost = ', '.join([f"{k[0]} {v}".capitalize() for k, v in definition.get("cost").items()])
+            name = definition.get('name', option).capitalize()
 
+            label = f"{name} ({cost})"
             button = GUIButton(
                 x=10 + i * 170,
                 y=10,
                 width=160,
                 height=30,
-                label=cls.NAME,
-                action=lambda c=cls: game_controller.handle_production_click(c, obj)
+                label=label,
+                action=lambda name=option: game_controller.handle_production_click(name, obj)
             )
             self.action_buttons.append(button)
+
+        if "production" in obj.type:
+            go_button = GUIButton(
+                x=self.window.width - 120,
+                y=50,
+                width=100,
+                height=30,
+                label="Test"
+            )
+            self.action_buttons.append(go_button)
 
     def add_queue_lines(self, lines: list[str]):
         self.queue_labels.clear()
