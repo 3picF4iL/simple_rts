@@ -24,8 +24,7 @@ class Unit(arcade.Sprite):
         self.cost = config.get("cost", {})
         self.actions = config.get("actions", [])
         self.production_options = config.get("production_options", [])
-        self.etype = config.get("etype")
-        self.unit_type = config.get("type", "unknown")
+        self.type = config.get("type", [])
 
         # Mods
         self.creation_time_mod = 1.0

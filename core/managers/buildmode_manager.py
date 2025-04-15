@@ -3,8 +3,6 @@ import arcade
 class BuildModeManager:
     def __init__(self, building_manager):
         self.valid_placement = False
-        self._check_timer = 0.0
-        self._check_interval = 0.1
         self.building_manager = building_manager
         self.ghost = None
         self.ghost_list = arcade.SpriteList()
@@ -42,3 +40,8 @@ class BuildModeManager:
         if self.ghost and self.should_place():
             self.building_manager.add_building(self.ghost.center_x, self.ghost.center_y, self.ghost.name)
             self.cancel()
+
+class AssemblyPointManager:
+    def __init__(self, unit_manager):
+        self.valid_placement = False
+        self.unit_manager = unit_manager

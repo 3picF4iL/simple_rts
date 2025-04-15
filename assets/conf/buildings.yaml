@@ -2,20 +2,18 @@
 barracks:
   name: "barracks"
   description: "barracks_desc"
-  etype: "building"
-  type: "military"
-  color: "RED"
+  type: ["building", "military", "production"]
+  color: "GRAY"
   size: 100
   cost:
     wood: 100
     food: 50
-  production_options: ["test_unit"]
+  production_options: ["test_unit", "test_unit2"]
 
 town_center:
   name: "town_center"
   description: "town_center_desc"
-  etype: "building"
-  type: "economic"
+  type: ["building", "economic", "production"]
   color: "BLUE"
   size: 100
   cost:

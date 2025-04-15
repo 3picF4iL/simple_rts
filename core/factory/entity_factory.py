@@ -22,7 +22,7 @@ class EntityFactory:
 
     def get_type(self, name):
         definition = self.get_definition(name)
-        return definition.get("etype") if definition else None
+        return definition.get("type") if definition else None
 
     def get_cost(self, name):
         definition = self.get_definition(name)

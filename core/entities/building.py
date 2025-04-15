@@ -12,10 +12,10 @@ class Building(arcade.Sprite):
         super().__init__(texture, center_x=x, center_y=y, width=size, height=size)
 
         self.selected = False
+        self.assembly_point = None
         self.name = config.get("name", "building")
         self.description = config.get("description", "")
-        self.etype = config.get("etype")
-        self.building_type = config.get("type", "unknown")
+        self.type = config.get("type", [])
         self.production_options = config.get("production_options", [])
         self.production_queue = []
         self.base_production_time = 1.0
@@ -39,7 +39,8 @@ class Building(arcade.Sprite):
         current["progress"] += dt * self.base_production_time
 
         if current["progress"] >= creation_time:
-            unit = self.entity_factory.create_unit(current["unit_name"], *self.spawn_point)
+            spawn_point = self.assembly_point if self.assembly_point else self.spawn_point
+            unit = self.entity_factory.create_unit(current["unit_name"], *spawn_point)
             unit_manager.units.append(unit)
             self.production_queue.pop(0)
             return
@@ -58,6 +59,9 @@ class Building(arcade.Sprite):
     def kill(self):
         self.production_queue.clear()
         super().kill()
+
+    def set_assembly_point(self, x, y):
+        self.assembly_point.append(x, y)
 
     def draw(self):
         super().draw()

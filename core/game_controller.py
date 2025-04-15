@@ -20,12 +20,12 @@ class GameController:
         self.pending_request: Optional[ProductionRequest] = None
 
     def handle_production_click(self, entity_name: str, source_obj):
-        etype = self.factory.get_type(entity_name)
+        type = self.factory.get_type(entity_name)
         cost = self.factory.get_cost(entity_name)
 
         self.pending_request = ProductionRequest(
             name=entity_name,
-            type=etype,
+            type=type,
             cost=cost,
             source=source_obj
         )
@@ -41,21 +41,22 @@ class GameController:
             self.gui_manager.set_click_info(f"Not enough resources for {req.name}")
             self.pending_request = None
             return
+        
+        print(req)
 
-        if req.type == "unit":
+        if "unit" in req.type:
             self.resource_manager.pay(req.cost)
             req.source.add_to_queue(req.name)
-            self.gui_manager.set_click_info(f"Queued: {req.name}")
+            #self.gui_manager.set_click_info(f"Queued: {req.name}")
             self.pending_request = None
 
-        elif req.type == "building":
+        elif "building" in req.type:
             self.set_build_mode(req.name)
-            self.gui_manager.set_click_info(f"Enter build mode: {req.name}")
+            #self.gui_manager.set_click_info(f"Enter build mode: {req.name}")
 
     def try_place_building(self):
-        print("try place")
         req = self.pending_request
-        if not req or req.type != "building":
+        if not req or "building" not in req.type:
             return
 
         if not self.resource_manager.can_afford(req.cost):
@@ -64,7 +65,7 @@ class GameController:
 
         self.resource_manager.pay(req.cost)
         self.build_mode_manager.place()
-        self.gui_manager.set_click_info(f"Placed: {req.name}")
+        #self.gui_manager.set_click_info(f"Placed: {req.name}")
         self.pending_request = None
 
     def set_build_mode(self, entity_name):
