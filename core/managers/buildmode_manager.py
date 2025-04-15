@@ -2,7 +2,6 @@ import arcade
 
 class BuildModeManager:
     def __init__(self, building_manager):
-        self.active_cls = None
         self.valid_placement = False
         self._check_timer = 0.0
         self._check_interval = 0.1
@@ -10,18 +9,17 @@ class BuildModeManager:
         self.ghost = None
         self.ghost_list = arcade.SpriteList()
 
-    def start(self, cls):
-        self.active_cls = cls
-        self.ghost = cls(0, 0)
+    def start(self, ename):
+        self.ghost = self.building_manager.add_building(0, 0, ename, add_to_list=False)
         self.ghost.alpha = 50
         self.ghost_list.append(self.ghost)
 
     def cancel(self):
-        self.active_cls = None
+        self.ghost = None
         self.ghost_list.clear()
 
     def is_active(self):
-        return self.active_cls and self.ghost_list
+        return bool(self.ghost_list)
 
     def update(self, x, y, blocked):
         if not self.ghost_list:
@@ -41,6 +39,6 @@ class BuildModeManager:
         return self.valid_placement
 
     def place(self):
-        if self.ghost and self.valid_placement and self.active_cls:
-            self.building_manager.add_building(self.active_cls.NAME, self.ghost.center_x, self.ghost.center_y)
+        if self.ghost and self.should_place():
+            self.building_manager.add_building(self.ghost.center_x, self.ghost.center_y, self.ghost.name)
             self.cancel()

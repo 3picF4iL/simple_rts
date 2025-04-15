@@ -1,23 +1,31 @@
 import arcade
 from utils.calc import dist
 from utils.i18n import t
-from core.entities.common import Entity
 
-class Unit(arcade.Sprite, Entity):
-    SPEED = 50  # px/s
-    CREATION_TIME = 1  # seconds
-    COST = {
-        "wood": 1,
-        "food": 1
-    }
+
+class Unit(arcade.Sprite):
     ENTITY_TYPE = 'unit'
-    def __init__(self, x, y, texture, color=arcade.color.BLUE, size=20):
-        super().__init__(texture, center_x=x, center_y=y, size=size)
+
+    def __init__(self, x, y, config):
+        size = config.get("size", 20)
+        color = getattr(arcade.color, config.get("color", "BLUE"))
+        texture = arcade.make_soft_square_texture(size, color, 255)
+
+        super().__init__(texture, center_x=x, center_y=y, width=size, height=size)
         self.target_x = x
         self.target_y = y
         self.selected = False
-        self.color = color
-        self.actions = ["[PLACEHOLDER] Move", "[PLACEHOLDER] Stop"]
+
+        # Configurable attributes
+        self.name = config.get("name", "unit")
+        self.description = config.get("description", "")
+        self.speed = config.get("speed", 50)
+        self.creation_time = config.get("creation_time", 1)
+        self.cost = config.get("cost", {})
+        self.actions = config.get("actions", [])
+        self.production_options = config.get("production_options", [])
+        self.etype = config.get("etype")
+        self.unit_type = config.get("type", "unknown")
 
         # Mods
         self.creation_time_mod = 1.0
@@ -54,75 +62,13 @@ class Unit(arcade.Sprite, Entity):
     def draw(self):
         super().draw()
         if self.selected:
-            arcade.draw_lrbt_rectangle_outline(self.center_x, self.center_y, 24, 24, arcade.color.YELLOW, 2)
+            arcade.draw_lrbt_rectangle_outline(
+                self.center_x - 12,
+                self.center_x + 12,
+                self.center_y - 12,
+                self.center_y + 12,
+                arcade.color.YELLOW, 2)
 
-    # Getters
     @property
     def final_creation_time(self):
-        return self.CREATION_TIME * self.creation_time_mod
-
-
-class TestUnit(Unit):
-    CREATION_TIME = 7
-    NAME = "test_unit"
-    DESCRIPTION = "test_unit_desc"
-    COST = {
-        "wood": 35,
-        "food": 10
-    }
-
-    def __init__(self, x, y, size=20):
-        color = arcade.color.GREEN
-        texture = arcade.make_soft_square_texture(size, color, 255)
-        super().__init__(x, y, texture, color, size)
-        self.speed = 100
-        self.actions = ["Move", "Attack", "Defend"]
-
-class TestUnit2(Unit):
-    CREATION_TIME = 3
-    NAME = "test_unit2"
-    DESCRIPTION = "test_unit2_desc"
-    COST = {
-        "wood": 25,
-        "food": 10
-    }
-
-    def __init__(self, x, y, size=20):
-        color = arcade.color.ORANGE
-        texture = arcade.make_soft_square_texture(size, color, 255)
-        super().__init__(x, y, texture, color, size)
-        self.speed = 80
-        self.actions = ["Move", "Attack", "Defend"]
-
-
-class Military(Unit):
-    color = arcade.color.RED_DEVIL
-    def __init__(self, x, y, texture, color, size=20):
-        super().__init__(x, y, texture, color, size)
-        self.unit_type = "military"
-
-
-
-class Civil(Unit):
-    color = arcade.color.DARK_GREEN
-    def __init__(self, x, y, texture, color, size=20):
-        super().__init__(x, y, texture, color, size)
-        self.unit_type = "civil"
-
-
-class Villager(Civil):
-    NAME = "villager"
-    DESCRIPTION = "villager_desc"
-    COST = {
-        "food": 50
-    }
-
-    CREATION_TIME = 4
-
-    def __init__(self, x, y, size=10):
-        color = arcade.color.DARK_RED
-        texture = arcade.make_soft_square_texture(size, color, 255)
-        super().__init__(x, y, texture, color, size)
-        self.speed = 80
-        self.actions = ["MOVE", "GATHER", "WAIT", "IDLE", "BUILD", "BUSY"]
-        self.production_options = ["barracks"]
+        return self.creation_time * self.creation_time_mod

@@ -1,13 +1,14 @@
 import arcade
 
 class InputManager:
-    def __init__(self, gui_manager, selection_manager, unit_manager, building_manager, build_mode_manager):
+    def __init__(self, gui_manager, selection_manager, unit_manager, building_manager, build_mode_manager, controller):
         self.gui = gui_manager
         self.selection = selection_manager
         self.units = unit_manager
         self.buildings = building_manager
         self.build_mode_manager = build_mode_manager
         self._mouse_down = False
+        self.controller = controller
 
     def on_mouse_press(self, x, y, button, modifiers):
         self._mouse_down = True
@@ -21,6 +22,8 @@ class InputManager:
         elif button == arcade.MOUSE_BUTTON_RIGHT:
             if not self.build_mode_manager.is_active():
                 self.units.command_move(self.selection.selected_objects, x, y)
+            else:
+                self.build_mode_manager.cancel()
 
     def on_mouse_release(self, x, y, button, modifiers):
         self._mouse_down = False
@@ -50,7 +53,7 @@ class InputManager:
             self.gui.set_active_objects(self.selection.selected_objects)
             self.selection.selecting = False
         elif self.build_mode_manager.is_active():
-            self.build_mode_manager.place()
+            self.controller.try_place_building()
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self._mouse_down and self.selection.selecting:

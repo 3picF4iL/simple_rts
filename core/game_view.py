@@ -7,7 +7,9 @@ from core.managers.input_manager import InputManager
 from core.managers.resource_manager import ResourceManager
 from core.managers.buildmode_manager import BuildModeManager
 from core.game_controller import GameController
+from core.factory.entity_factory import EntityFactory
 from utils.i18n import t
+from utils.loader import load_object_definitions
 
 
 class GameView(arcade.View):
@@ -16,25 +18,55 @@ class GameView(arcade.View):
         self.buildings = None
         self.unit_manager = None
         self.selection_manager = None
+        self.building_manager = None
+        self.build_mode_manager = None
+        self.resource_manager = None
+        self.controller = None
+        self.gui = None
+        self.input = None
+
+        self.objects_definitions = {}
+
         self.setup()
 
     def setup(self):
         arcade.set_background_color(arcade.color.AMAZON)
+        self.objects_definitions = load_object_definitions()
 
-        self.unit_manager = UnitManager()
+        unit_defs = self.objects_definitions.get('units', {})
+        building_defs = self.objects_definitions.get('buildings', {})
+
+        entity_factory = EntityFactory(unit_defs, building_defs)
+
+        self.unit_manager = UnitManager(unit_defs)
         self.selection_manager = SelectionManager()
-        self.building_manager = BuildingManager()
+        self.building_manager = BuildingManager(building_defs, entity_factory)
         self.resource_manager = ResourceManager()
         self.build_mode_manager = BuildModeManager(self.building_manager)
-        self.controller = GameController(self.unit_manager, self.building_manager, self.resource_manager, None, self.build_mode_manager)
+        self.controller = GameController(
+            self.unit_manager,
+            self.building_manager,
+            self.resource_manager,
+            None,
+            self.build_mode_manager,
+            entity_factory
+        )
         self.gui = GUIManager(self.window, self.controller)
         self.controller.gui_manager = self.gui
-        self.input = InputManager(self.gui, self.selection_manager, self.unit_manager, self.building_manager, self.build_mode_manager)
+        self.input = InputManager(
+            self.gui,
+            self.selection_manager,
+            self.unit_manager,
+            self.building_manager,
+            self.build_mode_manager,
+            self.controller
+        )
 
     def on_show_view(self):
-        self.building_manager.add_building('town_center', 300, 300)
-        self.building_manager.add_building('barracks', 700, 350)
-        self.unit_manager.spawn_unit('villager', 200, 300)
+        # Test purpose
+        self.building_manager.add_building(300, 300, 'town_center')
+        self.building_manager.add_building(700, 350, 'barracks')
+        self.unit_manager.spawn_unit(200, 300, 'villager')
 
     def on_draw(self):
         self.clear()

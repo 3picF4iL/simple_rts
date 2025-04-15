@@ -1,0 +1,24 @@
+---
+barracks:
+  name: "barracks"
+  description: "barracks_desc"
+  etype: "building"
+  type: "military"
+  color: "RED"
+  size: 100
+  cost:
+    wood: 100
+    food: 50
+  production_options: ["test_unit"]
+
+town_center:
+  name: "town_center"
+  description: "town_center_desc"
+  etype: "building"
+  type: "economic"
+  color: "BLUE"
+  size: 100
+  cost:
+    wood: 250
+    rock: 100
+  production_options: ["villager"]

@@ -143,17 +143,18 @@ class HUDLayout:
             return
 
         for i, option in enumerate(obj.production_options):
-            cls = game_controller.get_entity_class(option)
-            if not cls:
+            definition = game_controller.factory.get_definition(option)
+            if not definition:
                 continue
 
+            label = definition.get("name", option)
             button = GUIButton(
                 x=10 + i * 170,
                 y=10,
                 width=160,
                 height=30,
-                label=cls.NAME,
-                action=lambda c=cls: game_controller.handle_production_click(c, obj)
+                label=label,
+                action=lambda name=option: game_controller.handle_production_click(name, obj)
             )
             self.action_buttons.append(button)
 

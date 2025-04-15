@@ -23,6 +23,7 @@ class ResourceManager:
         return all(self.get(k) >= v for k, v in cost.items())
 
     def pay(self, cost: dict[str, int]):
+        print("Place")
         for k, v in cost.items():
             self.subtract(k, v)
 

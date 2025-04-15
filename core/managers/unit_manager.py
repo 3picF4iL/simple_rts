@@ -1,22 +1,15 @@
 import arcade
-from core.entities.unit import *
+from core.entities.unit import Unit
 
 class UnitManager:
-    def __init__(self):
-        self.units = arcade.SpriteList()
-        #self.units_selected = arcade.SpriteList()
-        self.unit_map = {
-            "test_unit": TestUnit,
-            "test_unit2": TestUnit2,
-            "villager": Villager
-        }
+    def __init__(self, definitions):
+        self.units = arcade.SpriteList(use_spatial_hash=True)
+        self.definitions = definitions
 
-    def spawn_unit(self, unit_type, x, y):
-        unit_cls = self.unit_map.get(unit_type)
-        if not unit_cls:
-            print(f"[UnitManager] Unknown unit type: {unit_type}")
-            return
-        unit = unit_cls(x, y)
+    def spawn_unit(self, x, y, uname):
+        unit = Unit(x, y, self.definitions[uname])
+        if not unit:
+            raise Exception("Unit not available!")
         self.units.append(unit)
 
     def update(self, delta_time, buildings):

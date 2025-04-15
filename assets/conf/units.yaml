@@ -1,0 +1,24 @@
+---
+test_unit:
+  name: "test_unit"
+  description: "test_unit_desc"
+  etype: "unit"
+  creation_time: 7
+  speed: 100
+  color: "GREEN"
+  cost:
+    wood: 35
+    food: 10
+  actions: ["Move", "Attack", "Defend"]
+
+villager:
+  name: "villager"
+  description: "villager_desc"
+  etype: "unit"
+  creation_time: 4
+  speed: 80
+  color: "DARK_RED"
+  cost:
+    food: 50
+  actions: ["MOVE", "GATHER", "WAIT", "IDLE", "BUILD", "BUSY"]
+  production_options: ["barracks"]
